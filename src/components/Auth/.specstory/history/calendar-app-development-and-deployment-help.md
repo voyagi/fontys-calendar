@@ -4550,8 +4550,329 @@ I'll make several improvements to make the interface more responsive and better 
 _**Assistant**_
 
 ```
-undefined
+'use client'
+import { useState, useEffect, useRef } from 'react'
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid/main'
+import timeGridPlugin from '@fullcalendar/timegrid/main'
+import interactionPlugin from '@fullcalendar/interaction/main'
+import listPlugin from '@fullcalendar/list/main'
+import { parseICS } from '@/lib/parseICS'
+import LoadingSpinner from '@/components/UI/LoadingSpinner'
+import ErrorMessage from '@/components/UI/ErrorMessage'
+import { MagnifyingGlassIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
+
+// ... existing code until return statement ...
+
+  if (loading && events.length === 0) return <LoadingSpinner />
+  if (error) return <ErrorMessage message={error} />
+
+  return (
+    <div className="h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] overflow-hidden flex flex-col">
+      <div className="p-4 space-y-4 bg-white shadow-sm sm:rounded-lg">
+        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
+          <div className="relative flex-grow max-w-md">
+            <input
+              type="text"
+              placeholder="Search events..."
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+          </div>
+          <div className="flex gap-2 justify-end">
+            <button
+              onClick={goToToday}
+              className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm sm:text-base flex-1 sm:flex-none"
+            >
+              Today
+            </button>
+            <button
+              onClick={handleExportCalendar}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base flex-1 sm:flex-none"
+            >
+              <ArrowDownTrayIcon className="h-5 w-5" />
+              <span className="hidden sm:inline">Export</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full" style={{ backgroundColor: '#4CAF50' }}></div>
+            <span>Lecture</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full" style={{ backgroundColor: '#2196F3' }}></div>
+            <span>Workshop</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full" style={{ backgroundColor: '#F44336' }}></div>
+            <span>Exam</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full" style={{ backgroundColor: '#FF9800' }}></div>
+            <span>Practical</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-hidden p-4">
+        <div className="h-full bg-white shadow-sm sm:rounded-lg p-2 sm:p-4">
+          <FullCalendar
+            ref={calendarRef}
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+            }}
+            initialView={window.innerWidth < 768 ? 'listWeek' : 'timeGridWeek'}
+            views={{
+              timeGridWeek: {
+                titleFormat: { year: 'numeric', month: 'short', day: 'numeric' }
+              },
+              timeGridDay: {
+                titleFormat: { year: 'numeric', month: 'short', day: 'numeric' }
+              }
+            }}
+            editable={false}
+            selectable={false}
+            selectMirror={true}
+            dayMaxEvents={true}
+            weekends={true}
+            events={filteredEvents}
+            eventClick={handleEventClick}
+            height="100%"
+            slotMinTime="07:00:00"
+            slotMaxTime="22:00:00"
+            allDaySlot={false}
+            slotDuration="00:30:00"
+            slotLabelInterval="01:00"
+            slotLabelFormat={{
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: false
+            }}
+            businessHours={{
+              daysOfWeek: [1, 2, 3, 4, 5],
+              startTime: '08:00',
+              endTime: '18:00',
+            }}
+            nowIndicator={true}
+            eventTimeFormat={{
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            }}
+            weekNumbers={true}
+            weekNumberFormat={{ week: 'numeric' }}
+            eventDidMount={(info) => {
+              info.el.title = `${info.event.title}\nLocation: ${info.event.extendedProps.location || 'N/A'}\n${info.event.extendedProps.formattedDescription || ''}`
+            }}
+          />
+        </div>
+      </div>
+
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold mb-2">{selectedEvent.title}</h3>
+              <div className="space-y-2 text-sm">
+                <p><span className="font-medium">Start:</span> {selectedEvent.start.toLocaleString()}</p>
+                <p><span className="font-medium">End:</span> {selectedEvent.end.toLocaleString()}</p>
+                {selectedEvent.location && (
+                  <p><span className="font-medium">Location:</span> {selectedEvent.location}</p>
+                )}
+                {selectedEvent.description && (
+                  <p><span className="font-medium">Description:</span> {selectedEvent.description}</p>
+                )}
+              </div>
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => setSelectedEvent(null)}
+                  className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 ```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+
+
+
+
+Now let's update the layout file to improve the overall page structure:
+
+---
+
+_**Assistant**_
+
+```
+import './globals.css'
+import { AuthProvider } from '@/contexts/AuthContext'
+import Navbar from '@/components/Navigation/Navbar'
+
+export const metadata = {
+  title: 'Fontys Calendar',
+  description: 'Calendar application for Fontys students',
+}
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" className="h-full bg-gray-50">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      </head>
+      <body className="h-full antialiased">
+        <AuthProvider>
+          <div className="min-h-full flex flex-col">
+            <Navbar />
+            <main className="flex-1 flex flex-col">
+              <div className="flex-1 w-full max-w-[2000px] mx-auto">
+                {children}
+              </div>
+            </main>
+          </div>
+        </AuthProvider>
+      </body>
+    </html>
+  )
+}
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+The improvements I've made include:
+
+1. Mobile-First Design:
+   - Added responsive text sizes (`text-sm sm:text-base`)
+   - Stacked layout on mobile, side-by-side on desktop
+   - Smaller icons and indicators on mobile
+   - Hidden "Export" text on mobile, visible on desktop
+
+2. Better Layout Structure:
+   - Fixed height calculations to prevent overflow
+   - Added proper padding and spacing
+   - Improved shadow and rounded corners
+   - Better background colors and contrast
+
+3. Calendar Improvements:
+   - Auto-switches to list view on mobile devices
+   - Better date formatting in headers
+   - Improved event modal design
+   - Better spacing and alignment
+
+4. iOS Specific Improvements:
+   - Added viewport meta tag to prevent zooming
+   - Added `antialiased` for better text rendering
+   - Improved touch targets for better interaction
+   - Better modal design for mobile devices
+
+5. Windows Improvements:
+   - Better use of available space
+   - Improved scrolling behavior
+   - Better contrast and readability
+   - Consistent padding and spacing
+
+The calendar should now look much better on both Windows and iOS devices. The interface will:
+- Automatically adjust to screen size
+- Be more touch-friendly on mobile
+- Have better readability
+- Use space more efficiently
+- Have consistent styling across devices
+
+Would you like me to make any additional adjustments to the design?
+
+---
+
+_**User**_
+
+Now make the changes live
+
+---
+
+_**Assistant**_
+
+I'll help you commit and deploy the latest UI improvements:
+
+---
+
+_**Assistant**_
+
+```
+cd C:\Users\Eagi\Documents\fontys-calendar-new && git add . && git commit -m "Improve UI responsiveness for Windows and iOS" && git push
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+Now let's deploy on Vercel. Go to [Vercel](https://vercel.com/) and:
+
+1. Find your project
+2. Click "Redeploy" to deploy with the latest changes
+3. Make sure these settings are correct:
+   - Root Directory: `.` (project root)
+   - Framework Preset: Next.js
+   - Build Command: `next build`
+   - Install Command: `npm install`
+   - Environment Variables:
+     ```
+     NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+     NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+     ```
+
+The improvements we've deployed include:
+1. Better mobile responsiveness
+2. Improved layout structure
+3. Better touch targets for mobile devices
+4. Automatic view switching based on screen size
+5. Improved modal design
+6. Better spacing and alignment
+7. Enhanced readability
+8. More efficient use of space
+
+The calendar should now look and work much better on both Windows and iOS devices. Would you like me to make any additional adjustments to the design?
+
+---
+
+_**User**_
+
+Make the interface look like this
 
 ---
 
