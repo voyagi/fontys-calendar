@@ -1,5 +1,5 @@
 'use client'
-import ProtectedRoute from '@/components/components/ProtectedRoute'
+import ProtectedRoute from '@/components/Auth/ProtectedRoute'
 import Calendar from '@/components/Calendar/Calendar'
 
 export default function Home() {
