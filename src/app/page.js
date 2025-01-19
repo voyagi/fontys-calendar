@@ -99,3 +99,8 @@ export default function Home() {
     </div>
   );
 }
+import LoginForm from '@/components/Auth/LoginForm'
+
+export default function Home() {
+  return <LoginForm />
+}
