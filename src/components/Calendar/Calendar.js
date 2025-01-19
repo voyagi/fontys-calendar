@@ -154,138 +154,132 @@ export default function Calendar() {
   if (error) return <ErrorMessage message={error} />
 
   return (
-    <div className="h-screen p-4">
-      <div className="mb-4 flex flex-wrap gap-4 items-center justify-between">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search events..."
-            className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+    <div className="h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] overflow-hidden flex flex-col">
+      <div className="p-4 space-y-4 bg-white shadow-sm sm:rounded-lg">
+        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between">
+          <div className="relative flex-grow max-w-md">
+            <input
+              type="text"
+              placeholder="Search events..."
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+          </div>
+          <div className="flex gap-2 justify-end">
+            <button
+              onClick={goToToday}
+              className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm sm:text-base flex-1 sm:flex-none"
+            >
+              Today
+            </button>
+            <button
+              onClick={handleExportCalendar}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 text-sm sm:text-base flex-1 sm:flex-none"
+            >
+              <ArrowDownTrayIcon className="h-5 w-5" />
+              <span className="hidden sm:inline">Export</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-4 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full" style={{ backgroundColor: '#4CAF50' }}></div>
+            <span>Lecture</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full" style={{ backgroundColor: '#2196F3' }}></div>
+            <span>Workshop</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full" style={{ backgroundColor: '#F44336' }}></div>
+            <span>Exam</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full" style={{ backgroundColor: '#FF9800' }}></div>
+            <span>Practical</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-hidden p-4">
+        <div className="h-full bg-white shadow-sm sm:rounded-lg p-2 sm:p-4">
+          <FullCalendar
+            ref={calendarRef}
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
+            headerToolbar={{
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+            }}
+            initialView={window.innerWidth < 768 ? 'listWeek' : 'timeGridWeek'}
+            views={{
+              timeGridWeek: {
+                titleFormat: { year: 'numeric', month: 'short', day: 'numeric' }
+              },
+              timeGridDay: {
+                titleFormat: { year: 'numeric', month: 'short', day: 'numeric' }
+              }
+            }}
+            editable={false}
+            selectable={false}
+            selectMirror={true}
+            dayMaxEvents={true}
+            weekends={true}
+            events={filteredEvents}
+            eventClick={handleEventClick}
+            height="100%"
+            slotMinTime="07:00:00"
+            slotMaxTime="22:00:00"
+            allDaySlot={false}
+            slotDuration="00:30:00"
+            slotLabelInterval="01:00"
+            slotLabelFormat={{
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: false
+            }}
+            businessHours={{
+              daysOfWeek: [1, 2, 3, 4, 5],
+              startTime: '08:00',
+              endTime: '18:00',
+            }}
+            nowIndicator={true}
+            eventTimeFormat={{
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            }}
+            weekNumbers={true}
+            weekNumberFormat={{ week: 'numeric' }}
+            eventDidMount={(info) => {
+              info.el.title = `${info.event.title}\nLocation: ${info.event.extendedProps.location || 'N/A'}\n${info.event.extendedProps.formattedDescription || ''}`
+            }}
           />
-          <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 absolute left-3 top-2.5" />
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={goToToday}
-            className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-          >
-            Today
-          </button>
-          <button
-            onClick={handleExportCalendar}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
-          >
-            <ArrowDownTrayIcon className="h-5 w-5" />
-            Export
-          </button>
         </div>
       </div>
 
-      <div className="mb-4 flex flex-wrap gap-4">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#4CAF50' }}></div>
-          <span>Lecture</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#2196F3' }}></div>
-          <span>Workshop</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#F44336' }}></div>
-          <span>Exam</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#FF9800' }}></div>
-          <span>Practical</span>
-        </div>
-      </div>
-
-      <FullCalendar
-        ref={calendarRef}
-        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
-        headerToolbar={{
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-        }}
-        initialView="timeGridWeek"
-        editable={false}
-        selectable={false}
-        selectMirror={true}
-        dayMaxEvents={true}
-        weekends={true}
-        events={filteredEvents}
-        eventClick={handleEventClick}
-        height="100%"
-        slotMinTime="07:00:00"
-        slotMaxTime="22:00:00"
-        allDaySlot={false}
-        slotDuration="00:30:00"
-        slotLabelInterval="01:00"
-        slotLabelFormat={{
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: false
-        }}
-        businessHours={{
-          daysOfWeek: [1, 2, 3, 4, 5],
-          startTime: '08:00',
-          endTime: '18:00',
-        }}
-        nowIndicator={true}
-        eventTimeFormat={{
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-        }}
-        weekNumbers={true}
-        weekNumberFormat={{ week: 'numeric' }}
-        eventDidMount={(info) => {
-          info.el.title = `${info.event.title}\nLocation: ${info.event.extendedProps.location || 'N/A'}\n${info.event.extendedProps.formattedDescription || ''}`
-        }}
-      />
-      
       {selectedEvent && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            <div className="mt-3">
-              <h3 className="text-lg font-medium leading-6 text-gray-900 mb-2">
-                {selectedEvent.title}
-              </h3>
-              <div className="mt-2 text-sm text-gray-500">
-                <p className="mb-1">
-                  <strong>Start:</strong> {selectedEvent.start.toLocaleString()}
-                </p>
-                <p className="mb-1">
-                  <strong>End:</strong> {selectedEvent.end.toLocaleString()}
-                </p>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold mb-2">{selectedEvent.title}</h3>
+              <div className="space-y-2 text-sm">
+                <p><span className="font-medium">Start:</span> {selectedEvent.start.toLocaleString()}</p>
+                <p><span className="font-medium">End:</span> {selectedEvent.end.toLocaleString()}</p>
                 {selectedEvent.location && (
-                  <p className="mb-1">
-                    <strong>Location:</strong> {selectedEvent.location}
-                  </p>
+                  <p><span className="font-medium">Location:</span> {selectedEvent.location}</p>
                 )}
                 {selectedEvent.description && (
-                  <p className="mb-1">
-                    <strong>Description:</strong> {selectedEvent.description}
-                  </p>
-                )}
-                {selectedEvent.attendees && selectedEvent.attendees.length > 0 && (
-                  <div className="mb-1">
-                    <strong>Attendees:</strong>
-                    <ul className="list-disc pl-5">
-                      {selectedEvent.attendees.map((attendee, index) => (
-                        <li key={index}>{attendee}</li>
-                      ))}
-                    </ul>
-                  </div>
+                  <p><span className="font-medium">Description:</span> {selectedEvent.description}</p>
                 )}
               </div>
-              <div className="mt-4">
+              <div className="mt-6 flex justify-end">
                 <button
                   onClick={() => setSelectedEvent(null)}
-                  className="w-full px-4 py-2 bg-gray-100 text-gray-800 rounded hover:bg-gray-200"
+                  className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-sm"
                 >
                   Close
                 </button>
