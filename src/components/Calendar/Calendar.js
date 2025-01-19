@@ -1,10 +1,10 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import { Calendar as FullCalendar } from '@fullcalendar/core'
-import { default as dayGridPlugin } from '@fullcalendar/daygrid/index.cjs'
-import { default as timeGridPlugin } from '@fullcalendar/timegrid/index.cjs'
-import { default as interactionPlugin } from '@fullcalendar/interaction/index.cjs'
-import { default as listPlugin } from '@fullcalendar/list/index.cjs'
+import FullCalendarComponent from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import interactionPlugin from '@fullcalendar/interaction'
+import listPlugin from '@fullcalendar/list'
 import { parseICS } from '@/lib/parseICS'
 import LoadingSpinner from '@/components/UI/LoadingSpinner'
 import ErrorMessage from '@/components/UI/ErrorMessage'
@@ -202,7 +202,7 @@ export default function Calendar() {
         </div>
       </div>
 
-      <FullCalendar
+      <FullCalendarComponent
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
         headerToolbar={{

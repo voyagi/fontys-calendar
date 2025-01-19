@@ -16,14 +16,16 @@ const nextConfig = {
       ...config.resolve.alias,
       '@': '.',
     }
-    // Add support for CommonJS modules
-    config.module.rules.push({
-      test: /\.cjs$/,
-      type: 'javascript/auto',
-      resolve: {
-        fullySpecified: false
-      }
-    })
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      stream: require.resolve('stream-browserify'),
+      zlib: require.resolve('browserify-zlib'),
+      util: require.resolve('util'),
+      assert: require.resolve('assert'),
+      http: require.resolve('stream-http'),
+      https: require.resolve('https-browserify'),
+      os: require.resolve('os-browserify'),
+    }
     return config
   },
 }
