@@ -11,11 +11,18 @@ const nextConfig = {
     '@fullcalendar/timegrid'
   ],
   webpack: (config) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-    };
-    return config;
+    config.resolve = {
+      ...config.resolve,
+      fallback: {
+        ...config.resolve.fallback,
+        fs: false,
+      },
+      alias: {
+        ...config.resolve.alias,
+        '@': '.',
+      },
+    }
+    return config
   },
 }
 
