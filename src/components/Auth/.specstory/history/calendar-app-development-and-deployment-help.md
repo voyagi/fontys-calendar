@@ -3002,6 +3002,507 @@ _**Assistant**_
 
 
 
+Let's try a different approach with the FullCalendar imports. We'll modify the Calendar component to use the standard import paths:
+
+---
+
+_**Assistant**_
+
+```
+'use client'
+import { useState, useEffect, useRef } from 'react'
+import FullCalendarComponent from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import interactionPlugin from '@fullcalendar/interaction'
+import listPlugin from '@fullcalendar/list'
+import { parseICS } from '@/lib/parseICS'
+import LoadingSpinner from '@/components/UI/LoadingSpinner'
+import ErrorMessage from '@/components/UI/ErrorMessage'
+import { MagnifyingGlassIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
+
+export default function Calendar() {
+  // ... rest of the component code stays the same, just replace FullCalendar with FullCalendarComponent in the JSX
+  
+  return (
+    <div className="h-screen p-4">
+      {/* ... other JSX ... */}
+      
+      <FullCalendarComponent
+        ref={calendarRef}
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
+        // ... rest of the props stay the same
+      />
+      
+      {/* ... rest of the JSX ... */}
+    </div>
+  )
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Let's update the next.config.js to handle the imports better:
+
+---
+
+_**Assistant**_
+
+```
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+  transpilePackages: [
+    '@fullcalendar/common',
+    '@fullcalendar/core',
+    '@fullcalendar/react',
+    '@fullcalendar/daygrid',
+    '@fullcalendar/timegrid',
+    '@fullcalendar/list',
+    '@fullcalendar/interaction'
+  ],
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': '.',
+    }
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      stream: require.resolve('stream-browserify'),
+      zlib: require.resolve('browserify-zlib'),
+      util: require.resolve('util'),
+      assert: require.resolve('assert'),
+      http: require.resolve('stream-http'),
+      https: require.resolve('https-browserify'),
+      os: require.resolve('os-browserify'),
+    }
+    return config
+  },
+}
+
+module.exports = nextConfig
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Let's update the package.json to include the necessary polyfills:
+
+---
+
+_**Assistant**_
+
+```
+{
+  "name": "fontys-calendar-new",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@fullcalendar/common": "^6.1.10",
+    "@fullcalendar/core": "^6.1.10",
+    "@fullcalendar/daygrid": "^6.1.10",
+    "@fullcalendar/interaction": "^6.1.10",
+    "@fullcalendar/list": "^6.1.10",
+    "@fullcalendar/react": "^6.1.10",
+    "@fullcalendar/timegrid": "^6.1.10",
+    "@headlessui/react": "^1.7.18",
+    "@heroicons/react": "^2.1.1",
+    "@supabase/supabase-js": "^2.39.3",
+    "assert": "^2.1.0",
+    "browserify-zlib": "^0.2.0",
+    "https-browserify": "^1.0.0",
+    "ical.js": "^1.5.0",
+    "next": "14.1.0",
+    "os-browserify": "^0.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "util": "^0.12.5"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.1.0",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1"
+  }
+}
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Now let's clean install the dependencies:
+
+---
+
+_**Assistant**_
+
+```
+Remove-Item -Recurse -Force node_modules; Remove-Item package-lock.json; npm install
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Let's commit and push these changes:
+
+---
+
+_**Assistant**_
+
+```
+git add . && git commit -m "Fix FullCalendar imports and add polyfills" && git push
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Now try deploying again on Vercel:
+
+1. Go to your Vercel project
+2. Click "Redeploy"
+3. Make sure these settings are correct:
+   - Root Directory: `src`
+   - Install Command: `npm install`
+   - Build Command: `next build`
+   - Output Directory: `.next`
+
+The changes we made should fix the FullCalendar issues:
+1. Updated imports to use standard paths
+2. Added necessary polyfills for browser compatibility
+3. Updated webpack configuration for better module resolution
+4. Simplified the Calendar component imports
+
+Let me know if you see any other errors during deployment!
+
+---
+
+_**User**_
+
+[17:39:06.245] Running build in Washington, D.C., USA (East) – iad1
+[17:39:06.375] Cloning github.com/voyagi/fontys-calendar (Branch: main, Commit: ccf8ac5)
+[17:39:06.641] Cloning completed: 265.286ms
+[17:39:06.711] Previous build cache not available
+[17:39:06.948] Running "vercel build"
+[17:39:07.505] Vercel CLI 39.3.0
+[17:39:07.823] Running "install" command: `npm install`...
+[17:39:10.331] npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+[17:39:10.787] npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+[17:39:11.773] npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+[17:39:11.774] npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+[17:39:11.876] npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+[17:39:13.481] npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+[17:39:19.734] 
+[17:39:19.734] added 397 packages, and audited 398 packages in 12s
+[17:39:19.734] 
+[17:39:19.735] 145 packages are looking for funding
+[17:39:19.735]   run `npm fund` for details
+[17:39:19.788] 
+[17:39:19.789] 1 high severity vulnerability
+[17:39:19.789] 
+[17:39:19.789] To address all issues, run:
+[17:39:19.789]   npm audit fix --force
+[17:39:19.790] 
+[17:39:19.790] Run `npm audit` for details.
+[17:39:19.848] Detected Next.js version: 14.1.0
+[17:39:19.849] Running "next build"
+[17:39:20.784] Attention: Next.js now collects completely anonymous telemetry regarding usage.
+[17:39:20.785] This information is used to shape Next.js' roadmap and prioritize features.
+[17:39:20.785] You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+[17:39:20.785] https://nextjs.org/telemetry
+[17:39:20.785] 
+[17:39:20.876]    ▲ Next.js 14.1.0
+[17:39:20.876] 
+[17:39:20.943]    Creating an optimized production build ...
+[17:39:27.359] Failed to compile.
+[17:39:27.360] 
+[17:39:27.361] ./components/Calendar/Calendar.js
+[17:39:27.361] Module not found: Package path ./index.js is not exported from package /vercel/path0/src/node_modules/@fullcalendar/react (see exports field in /vercel/path0/src/node_modules/@fullcalendar/react/package.json)
+[17:39:27.361] 
+[17:39:27.361] https://nextjs.org/docs/messages/module-not-found
+[17:39:27.361] 
+[17:39:27.361] Import trace for requested module:
+[17:39:27.361] ./app/page.js
+[17:39:27.361] 
+[17:39:27.361] ./node_modules/@fullcalendar/daygrid/index.js
+[17:39:27.361] Module not found: Package path ./index.js/internal.js is not exported from package /vercel/path0/src/node_modules/@fullcalendar/core (see exports field in /vercel/path0/src/node_modules/@fullcalendar/core/package.json)
+[17:39:27.361] 
+[17:39:27.361] https://nextjs.org/docs/messages/module-not-found
+[17:39:27.361] 
+[17:39:27.361] Import trace for requested module:
+[17:39:27.361] ./components/Calendar/Calendar.js
+[17:39:27.361] ./app/page.js
+[17:39:27.361] 
+[17:39:27.361] ./node_modules/@fullcalendar/daygrid/index.js
+[17:39:27.361] Module not found: Package path ./index.js/preact.js is not exported from package /vercel/path0/src/node_modules/@fullcalendar/core (see exports field in /vercel/path0/src/node_modules/@fullcalendar/core/package.json)
+[17:39:27.361] 
+[17:39:27.361] https://nextjs.org/docs/messages/module-not-found
+[17:39:27.361] 
+[17:39:27.362] Import trace for requested module:
+[17:39:27.362] ./components/Calendar/Calendar.js
+[17:39:27.362] ./app/page.js
+[17:39:27.362] 
+[17:39:27.362] ./node_modules/@fullcalendar/daygrid/internal.js
+[17:39:27.368] Module not found: Package path ./index.js/internal.js is not exported from package /vercel/path0/src/node_modules/@fullcalendar/core (see exports field in /vercel/path0/src/node_modules/@fullcalendar/core/package.json)
+[17:39:27.368] 
+[17:39:27.368] https://nextjs.org/docs/messages/module-not-found
+[17:39:27.368] 
+[17:39:27.368] Import trace for requested module:
+[17:39:27.368] ./node_modules/@fullcalendar/daygrid/index.js
+[17:39:27.369] ./components/Calendar/Calendar.js
+[17:39:27.369] ./app/page.js
+[17:39:27.369] 
+[17:39:27.369] ./node_modules/@fullcalendar/daygrid/internal.js
+[17:39:27.369] Module not found: Package path ./index.js/preact.js is not exported from package /vercel/path0/src/node_modules/@fullcalendar/core (see exports field in /vercel/path0/src/node_modules/@fullcalendar/core/package.json)
+[17:39:27.369] 
+[17:39:27.370] https://nextjs.org/docs/messages/module-not-found
+[17:39:27.370] 
+[17:39:27.370] Import trace for requested module:
+[17:39:27.370] ./node_modules/@fullcalendar/daygrid/index.js
+[17:39:27.370] ./components/Calendar/Calendar.js
+[17:39:27.374] ./app/page.js
+[17:39:27.374] 
+[17:39:27.374] 
+[17:39:27.374] > Build failed because of webpack errors
+[17:39:27.402] Error: Command "next build" exited with 1
+[17:39:27.720] 
+
+---
+
+_**Assistant**_
+
+
+
+Let's try a different approach by using an older version of FullCalendar that's known to work with Next.js. Let's update the package.json:
+
+---
+
+_**Assistant**_
+
+```
+{
+  "name": "fontys-calendar-new",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@fullcalendar/common": "5.11.3",
+    "@fullcalendar/core": "5.11.3",
+    "@fullcalendar/daygrid": "5.11.3",
+    "@fullcalendar/interaction": "5.11.3",
+    "@fullcalendar/list": "5.11.3",
+    "@fullcalendar/react": "5.11.3",
+    "@fullcalendar/timegrid": "5.11.3",
+    "@headlessui/react": "^1.7.18",
+    "@heroicons/react": "^2.1.1",
+    "@supabase/supabase-js": "^2.39.3",
+    "ical.js": "^1.5.0",
+    "next": "14.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "14.1.0",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1"
+  }
+}
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Let's update the next.config.js to be simpler:
+
+---
+
+_**Assistant**_
+
+```
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  transpilePackages: [
+    '@fullcalendar/common',
+    '@fullcalendar/core',
+    '@fullcalendar/daygrid',
+    '@fullcalendar/interaction',
+    '@fullcalendar/list',
+    '@fullcalendar/react',
+    '@fullcalendar/timegrid'
+  ],
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': '.',
+    }
+    return config
+  },
+}
+
+module.exports = nextConfig
+```
+
+---
+
+_**Assistant**_
+
+
+
 ---
 
 
