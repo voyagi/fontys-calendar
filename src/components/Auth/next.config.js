@@ -2,6 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  transpilePackages: [
+    '@fullcalendar/core',
+    '@fullcalendar/react',
+    '@fullcalendar/daygrid',
+    '@fullcalendar/timegrid',
+    '@fullcalendar/list',
+    '@fullcalendar/interaction'
+  ],
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
