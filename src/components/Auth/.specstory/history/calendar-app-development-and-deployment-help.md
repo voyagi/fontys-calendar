@@ -3503,6 +3503,184 @@ _**Assistant**_
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Let's update the Calendar component to use the correct imports:
+
+---
+
+_**Assistant**_
+
+```
+'use client'
+import { useState, useEffect, useRef } from 'react'
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import interactionPlugin from '@fullcalendar/interaction'
+import listPlugin from '@fullcalendar/list'
+import { parseICS } from '@/lib/parseICS'
+import LoadingSpinner from '@/components/UI/LoadingSpinner'
+import ErrorMessage from '@/components/UI/ErrorMessage'
+import { MagnifyingGlassIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
+
+// ... rest of the component code stays the same
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Now let's clean install the dependencies:
+
+---
+
+_**Assistant**_
+
+```
+Remove-Item -Recurse -Force node_modules; Remove-Item package-lock.json; npm install
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Let's commit and push these changes:
+
+---
+
+_**Assistant**_
+
+```
+git add . && git commit -m "Downgrade FullCalendar to version 5.11.3 for better compatibility" && git push
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Now try deploying again on Vercel:
+
+1. Go to your Vercel project
+2. Click "Redeploy"
+3. Make sure these settings are correct:
+   - Root Directory: `src`
+   - Install Command: `npm install`
+   - Build Command: `next build`
+   - Output Directory: `.next`
+
+The changes we made should fix the FullCalendar issues:
+1. Downgraded to FullCalendar version 5.11.3 which is known to work with Next.js
+2. Simplified the Next.js configuration
+3. Updated imports to use the correct format
+4. Removed unnecessary polyfills and dependencies
+
+Let me know if you see any other errors during deployment!
+
+---
+
+_**User**_
+
+deploy it again to github
+
+---
+
+_**Assistant**_
+
+
+
 ---
 
 
