@@ -3,6 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   transpilePackages: [
+    '@fullcalendar/common',
     '@fullcalendar/core',
     '@fullcalendar/react',
     '@fullcalendar/daygrid',
@@ -15,6 +16,14 @@ const nextConfig = {
       ...config.resolve.alias,
       '@': '.',
     }
+    // Add support for CommonJS modules
+    config.module.rules.push({
+      test: /\.cjs$/,
+      type: 'javascript/auto',
+      resolve: {
+        fullySpecified: false
+      }
+    })
     return config
   },
 }
