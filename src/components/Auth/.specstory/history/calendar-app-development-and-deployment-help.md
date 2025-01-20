@@ -9482,8 +9482,207 @@ Let me also update the `next.config.js` to ensure proper module resolution:
 _**Assistant**_
 
 ```
-undefined
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  webpack: (config) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': './src'
+    }
+    return config
+  }
+}
+
+module.exports = nextConfig
 ```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+Let me try a different approach. Let's update the import paths in the files to use relative paths instead of the `@` alias:
+
+---
+
+_**Assistant**_
+
+```
+import LoginForm from '../../components/Auth/LoginForm'
+
+export default function LoginPage() {
+  return <LoginForm />
+}
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+Let me also update the main page:
+
+---
+
+_**Assistant**_
+
+```
+import ProtectedRoute from '../components/Auth/ProtectedRoute'
+
+export default function Home() {
+  return (
+    <ProtectedRoute>
+      <main className="flex min-h-screen flex-col items-center justify-between p-24">
+        <h1>Welcome to Fontys Calendar</h1>
+      </main>
+    </ProtectedRoute>
+  )
+}
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+Now let's restore the Next.js configuration with both the module aliases and FullCalendar settings:
+
+---
+
+_**Assistant**_
+
+```
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  transpilePackages: [
+    '@fullcalendar/common',
+    '@fullcalendar/core',
+    '@fullcalendar/daygrid',
+    '@fullcalendar/interaction',
+    '@fullcalendar/list',
+    '@fullcalendar/react',
+    '@fullcalendar/timegrid'
+  ],
+  webpack: (config) => {
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+    };
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': './src'
+    };
+    return config;
+  },
+}
+
+module.exports = nextConfig
+```
+
+---
+
+_**Assistant**_
+
+
+
+
+
+
+
+Now let's commit these changes and push them to GitHub:
+
+---
+
+_**Assistant**_
+
+```
+git add . && git commit -m "Fix module resolution and update Next.js config" && git push
+```
+
+---
+
+_**Assistant**_
+
+
+
+The changes have been pushed to GitHub. This should fix the module resolution issues in the build. The key changes made were:
+
+1. Updated import paths to use relative paths instead of `@` alias
+2. Restored the Next.js configuration with both module aliases and FullCalendar settings
+3. Added proper path configurations in `jsconfig.json`
+
+Try deploying again on Vercel. If you encounter any other errors, please let me know!
+
+---
+
+_**User**_
+
+[00:54:02.258] Running build in Washington, D.C., USA (East) – iad1
+[00:54:02.410] Cloning github.com/voyagi/fontys-calendar (Branch: main, Commit: 9095b6f)
+[00:54:02.433] Skipping build cache, deployment was triggered without cache.
+[00:54:06.422] Cloning completed: 4.012s
+[00:54:06.845] Running "vercel build"
+[00:54:08.039] Vercel CLI 39.3.0
+[00:54:09.883] Installing dependencies...
+[00:54:12.362] npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+[00:54:12.897] npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+[00:54:13.874] npm warn deprecated @supabase/auth-helpers-shared@0.7.0: This package is now deprecated - please use the @supabase/ssr package instead.
+[00:54:13.876] npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+[00:54:13.949] npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+[00:54:13.987] npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+[00:54:14.198] npm warn deprecated @supabase/auth-helpers-nextjs@0.10.0: This package is now deprecated - please use the @supabase/ssr package instead.
+[00:54:15.567] npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+[00:54:20.712] 
+[00:54:20.713] added 402 packages in 11s
+[00:54:20.714] 
+[00:54:20.714] 146 packages are looking for funding
+[00:54:20.714]   run `npm fund` for details
+[00:54:20.768] Detected Next.js version: 14.1.0
+[00:54:20.772] Running "npm run build"
+[00:54:21.678] 
+[00:54:21.678] > fontys-calendar-new@0.1.0 build
+[00:54:21.678] > next build
+[00:54:21.679] 
+[00:54:23.742] Attention: Next.js now collects completely anonymous telemetry regarding usage.
+[00:54:23.742] This information is used to shape Next.js' roadmap and prioritize features.
+[00:54:23.743] You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+[00:54:23.743] https://nextjs.org/telemetry
+[00:54:23.743] 
+[00:54:23.832]    ▲ Next.js 14.1.0
+[00:54:23.833] 
+[00:54:23.901]    Creating an optimized production build ...
+[00:54:29.519] Failed to compile.
+[00:54:29.520] 
+[00:54:29.520] ./src/app/page.js
+[00:54:29.520] Module not found: Can't resolve '@/components/Auth/ProtectedRoute'
+[00:54:29.520] 
+[00:54:29.520] https://nextjs.org/docs/messages/module-not-found
+[00:54:29.520] 
+[00:54:29.520] ./src/app/login/page.js
+[00:54:29.520] Module not found: Can't resolve '@/components/Auth/LoginForm'
+[00:54:29.520] 
+[00:54:29.521] https://nextjs.org/docs/messages/module-not-found
+[00:54:29.521] 
+[00:54:29.527] 
+[00:54:29.528] > Build failed because of webpack errors
+[00:54:29.580] Error: Command "npm run build" exited with 1
+[00:54:29.918] 
 
 ---
 
