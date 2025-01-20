@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "playwright test",
+    "test:perf": "playwright test tests/performance.test.js",
+    "test:ui": "playwright test --ui",
+    "analyze": "cross-env ANALYZE=true next build",
+    "lighthouse": "lighthouse http://localhost:3000 --view",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@fullcalendar/common": "^5.11.3",
@@ -26,17 +32,17 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^15.1.5",
-    "@playwright/test": "^1.49.1",
+    "@next/bundle-analyzer": "^14.1.0",
+    "@playwright/test": "^1.41.1",
     "autoprefixer": "^10.4.20",
     "cross-env": "^7.0.3",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
-    "husky": "^9.1.7",
-    "lighthouse": "^12.3.0",
-    "playwright": "^1.49.1",
+    "husky": "^8.0.3",
+    "lighthouse": "^11.4.0",
+    "playwright": "^1.41.1",
     "postcss": "^8.5.1",
-    "prettier": "^3.4.2",
+    "prettier": "^3.2.5",
     "tailwindcss": "^3.4.17"
   }
-}
+} 

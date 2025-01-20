@@ -1,10 +1,12 @@
-import ProtectedRoute from '../components/Auth/ProtectedRoute'
+'use client'
+import ProtectedRoute from '@/components/Auth/ProtectedRoute'
+import Calendar from '@/components/Calendar/Calendar'
 
 export default function Home() {
   return (
     <ProtectedRoute>
-      <main className="flex min-h-screen flex-col items-center justify-between p-24">
-        <h1>Welcome to Fontys Calendar</h1>
+      <main className="min-h-screen p-4">
+        <Calendar />
       </main>
     </ProtectedRoute>
   )

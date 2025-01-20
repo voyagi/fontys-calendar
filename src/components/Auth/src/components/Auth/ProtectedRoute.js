@@ -1,46 +1,39 @@
 'use client'
+
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 
 export default function ProtectedRoute({ children }) {
   const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // For now, we'll just simulate an auth check
     const checkAuth = async () => {
       try {
-        // Simulate auth check
-        await new Promise(resolve => setTimeout(resolve, 500))
-        setIsAuthenticated(false) // Always redirect to login for now
-        setLoading(false)
+        const { data: { session }, error } = await supabase.auth.getSession()
+        if (error) throw error
+        if (!session) {
+          router.push('/login')
+        }
       } catch (error) {
-        console.error('Auth check failed:', error)
-        setIsAuthenticated(false)
+        console.error('Error checking auth status:', error)
+        router.push('/login')
+      } finally {
         setLoading(false)
       }
     }
 
     checkAuth()
-  }, [])
-
-  useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      router.push('/login')
-    }
-  }, [loading, isAuthenticated, router])
+  }, [router])
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
       </div>
     )
   }
 
-  return isAuthenticated ? children : null
+  return children
 } 
