@@ -4,6 +4,8 @@ module.exports = {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/*.{js,jsx,ts,tsx}',
+    './public/index.html',
   ],
   theme: {
     extend: {
@@ -37,20 +39,6 @@ module.exports = {
       opacity: ['disabled'],
       cursor: ['disabled'],
       backgroundColor: ['active', 'disabled'],
-    },
-  },
-  // Production optimizations
-  purge: {
-    enabled: process.env.NODE_ENV === 'production',
-    content: [
-      './src/**/*.{js,jsx,ts,tsx}',
-      './public/index.html',
-    ],
-    options: {
-      safelist: ['dark'], // Keep dark mode classes
-      blocklist: [/^debug-/], // Remove debug classes
-      keyframes: true, // Purge unused keyframes
-      fontFace: true, // Purge unused font faces
     },
   },
 } 
